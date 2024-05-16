@@ -861,6 +861,10 @@
     "chartCompDesc": "A versatile component for visualizing data through various types of charts and graphs.",
     "chartCompKeywords": "chart, graph, data, visualization",
 
+    "shapeCompName": "Share",
+    "shapeCompDesc": "",
+    "shapeCompKeywords": "share",
+
     "carouselCompName": "Image Carousel",
     "carouselCompDesc": "A rotating carousel component for showcasing images, banners, or content slides.",
     "carouselCompKeywords": "carousel, images, rotation, showcase",
@@ -2590,5 +2594,13 @@
     "widthTooltip": "Pixel or Percentage, e.g. 520, 60%",
     "navStyle": "Menu Style",
     "navItemStyle": "Menu Item Style"
+  },
+  "tour": {
+    "options": {
+      "mask": {
+        "label": "Mask",
+        "tooltip": "Whether to enable masking, change mask style and fill color by pass custom props, the default follows the `mask` property of Tour."
+      }
+    }
   }
 }

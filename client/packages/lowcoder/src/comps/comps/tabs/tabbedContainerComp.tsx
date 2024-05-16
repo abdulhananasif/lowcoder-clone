@@ -28,14 +28,13 @@ import {
 import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
 import { disabledPropertyView, hiddenPropertyView } from "comps/utils/propertyUtils";
 import { trans } from "i18n";
-import { BoolCodeControl } from "comps/controls/codeControl";
+import { BoolCodeControl, NumberControl } from "comps/controls/codeControl";
 import { DisabledContext } from "comps/generators/uiCompBuilder";
 import { EditorContext } from "comps/editorState";
 import { checkIsMobile } from "util/commonUtils";
 import { messageInstance } from "lowcoder-design/src/components/GlobalInstances";
 import { BoolControl } from "comps/controls/boolControl";
 import { PositionControl } from "comps/controls/dropdownControl";
-import { NumberControl, StringControl } from "@lowcoder-ee/index.sdk";
 
 const EVENT_OPTIONS = [
   {
@@ -58,7 +57,7 @@ const childrenMap = {
   onEvent: eventHandlerControl(EVENT_OPTIONS),
   disabled: BoolCodeControl,
   showHeader: withDefault(BoolControl, true),
-  style: styleControl(TabContainerStyle),
+  style: withDefault(styleControl(TabContainerStyle),{borderWidth:'1px'}),
   headerStyle: styleControl(ContainerHeaderStyle),
   bodyStyle: styleControl(ContainerBodyStyle),
   tabsGutter: withDefault(NumberControl, 32),
@@ -73,6 +72,7 @@ const getStyle = (
   headerStyle: ContainerHeaderStyleType,
   bodyStyle: ContainerBodyStyleType,
 ) => {
+  console.log("🚀 ~ style:", style)
   return css`
     &.ant-tabs {
       overflow: hidden;
@@ -80,7 +80,7 @@ const getStyle = (
       border-radius: ${style.radius};
       padding: ${style.padding};
       background-color: ${style.background};
-      background-image: ${style.backgroundImage};
+      background-image: url(${style.backgroundImage});
       background-repeat: ${style.backgroundImageRepeat};
       background-size: ${style.backgroundImageSize};
       background-position: ${style.backgroundImagePosition};
@@ -91,26 +91,15 @@ const getStyle = (
         .react-grid-layout {
           border-radius: 0;
           background-color: ${bodyStyle.background || 'transparent'};
-          background-image: ${bodyStyle.backgroundImage};
-          background-repeat: ${bodyStyle.backgroundImageRepeat};
-          background-size: ${bodyStyle.backgroundImageSize};
-          background-position: ${bodyStyle.backgroundImagePosition};
-          background-origin: ${bodyStyle.backgroundImageOrigin};
-
         }
       }
 
       > .ant-tabs-nav {
         background-color: ${headerStyle.headerBackground || 'transparent'};
-        background-image: ${headerStyle.headerBackgroundImage};
-        background-repeat: ${headerStyle.headerBackgroundImageRepeat};
-        background-size: ${headerStyle.headerBackgroundImageSize};
-        background-position: ${headerStyle.headerBackgroundImagePosition};
-        background-origin: ${headerStyle.headerBackgroundImageOrigin};
 
         .ant-tabs-tab {
           div {
-            color: ${style.tabText};
+            color: #8b8fa3;
           }
 
           &.ant-tabs-tab-active div {

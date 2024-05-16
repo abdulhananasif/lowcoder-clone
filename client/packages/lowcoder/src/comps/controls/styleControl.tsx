@@ -1,29 +1,43 @@
-import { default as Tooltip } from "antd/es/tooltip";
-import { getThemeDetailName, isThemeColorKey, ThemeDetail } from "api/commonSettingApi";
-import { ControlItemCompBuilder } from "comps/generators/controlCompBuilder";
-import { childrenToProps, ToConstructor } from "comps/generators/multi";
-import { BackgroundColorContext } from "comps/utils/backgroundColorContext";
-import { ThemeContext } from "comps/utils/themeContext";
-import { trans } from "i18n";
-import _ from "lodash";
+import {default as Tooltip} from 'antd/es/tooltip';
+import {
+  getThemeDetailName,
+  isThemeColorKey,
+  ThemeDetail,
+} from 'api/commonSettingApi';
+import {ControlItemCompBuilder} from 'comps/generators/controlCompBuilder';
+import {childrenToProps, ToConstructor} from 'comps/generators/multi';
+import {BackgroundColorContext} from 'comps/utils/backgroundColorContext';
+import {ThemeContext} from 'comps/utils/themeContext';
+import {trans} from 'i18n';
+import _ from 'lodash';
 import {
   controlItem,
-  IconRadius,
   IconReset,
   ExpandIcon,
   CompressIcon,
   TextSizeIcon,
+  TextTransformationIcon,
   FontFamilyIcon,
   TextWeightIcon,
   ShowBorderIcon,
   BorderWidthIcon,
   ImageCompIconSmall,
-} from "lowcoder-design";
-import { useContext } from "react";
-import styled from "styled-components";
-import { useIsMobile } from "util/hooks";
-import { CSSCodeControl, ObjectControl, RadiusControl, StringControl } from "./codeControl";
-import { ColorControl } from "./colorControl";
+  RotationIcon,
+  TextDecorationIcon,
+  BorderStyleIcon,
+  BorderRadiusIcon,
+  TextStyleIcon,
+} from 'lowcoder-design';
+import {useContext} from 'react';
+import styled from 'styled-components';
+import {useIsMobile} from 'util/hooks';
+import {
+  CSSCodeControl,
+  ObjectControl,
+  RadiusControl,
+  StringControl,
+} from './codeControl';
+import {ColorControl} from './colorControl';
 import {
   defaultTheme,
   DepColorConfig,
@@ -32,12 +46,20 @@ import {
   SimpleColorConfig,
   SingleColorConfig,
   MarginConfig,
+  BoxShadowConfig,
+  AnimationIterationCountConfig,
+  OpacityConfig,
+  BoxShadowColorConfig,
+  AnimationConfig,
+  AnimationDelayConfig,
+  AnimationDurationConfig,
   PaddingConfig,
   TextSizeConfig,
   TextWeightConfig,
   FontFamilyConfig,
   FontStyleConfig,
   BorderWidthConfig,
+  RotationConfig,
   BackgroundImageConfig,
   BackgroundImageRepeatConfig,
   BackgroundImageSizeConfig,
@@ -56,114 +78,204 @@ import {
   TextTransformConfig,
   TextDecorationConfig,
   borderStyleConfig,
+} from './styleControlConstants';
+import {faTextWidth} from '@fortawesome/free-solid-svg-icons';
+import appSelectControl from './appSelectControl';
 
-
-} from "./styleControlConstants";
-import { faTextWidth } from "@fortawesome/free-solid-svg-icons";
-import appSelectControl from "./appSelectControl";
-
-function isSimpleColorConfig(config: SingleColorConfig): config is SimpleColorConfig {
-  return config.hasOwnProperty("color");
+function isSimpleColorConfig(
+  config: SingleColorConfig
+): config is SimpleColorConfig {
+  return config.hasOwnProperty('color');
 }
 
 function isDepColorConfig(config: SingleColorConfig): config is DepColorConfig {
-  return config.hasOwnProperty("depName") || config.hasOwnProperty("depTheme");
+  return config.hasOwnProperty('depName') || config.hasOwnProperty('depTheme');
 }
 
 function isRadiusConfig(config: SingleColorConfig): config is RadiusConfig {
-  return config.hasOwnProperty("radius");
+  return config.hasOwnProperty('radius');
 }
 
-function isBorderWidthConfig(config: SingleColorConfig): config is BorderWidthConfig {
-  return config.hasOwnProperty("borderWidth");
+function isBorderWidthConfig(
+  config: SingleColorConfig
+): config is BorderWidthConfig {
+  return config.hasOwnProperty('borderWidth');
 }
 
-function isBackgroundImageConfig(config: SingleColorConfig): config is BackgroundImageConfig {
-  return config.hasOwnProperty("backgroundImage");
+function isRotationConfig(config: SingleColorConfig): config is RotationConfig {
+  return config.hasOwnProperty('rotation');
 }
 
-function isBackgroundImageRepeatConfig(config: SingleColorConfig): config is BackgroundImageRepeatConfig {
-  return config.hasOwnProperty("backgroundImageRepeat");
+function isBackgroundImageConfig(
+  config: SingleColorConfig
+): config is BackgroundImageConfig {
+  return config.hasOwnProperty('backgroundImage');
 }
 
-function isBackgroundImageSizeConfig(config: SingleColorConfig): config is BackgroundImageSizeConfig {
-  return config.hasOwnProperty("backgroundImageSize");
+function isBackgroundImageRepeatConfig(
+  config: SingleColorConfig
+): config is BackgroundImageRepeatConfig {
+  return config.hasOwnProperty('backgroundImageRepeat');
 }
 
-function isBackgroundImagePositionConfig(config: SingleColorConfig): config is BackgroundImagePositionConfig {
-  return config.hasOwnProperty("backgroundImagePosition");
+function isBackgroundImageSizeConfig(
+  config: SingleColorConfig
+): config is BackgroundImageSizeConfig {
+  return config.hasOwnProperty('backgroundImageSize');
 }
 
-function isBackgroundImageOriginConfig(config: SingleColorConfig): config is BackgroundImageOriginConfig {
-  return config.hasOwnProperty("backgroundImageOrigin");
+function isBackgroundImagePositionConfig(
+  config: SingleColorConfig
+): config is BackgroundImagePositionConfig {
+  return config.hasOwnProperty('backgroundImagePosition');
 }
 
-function isHeaderBackgroundImageConfig(config: SingleColorConfig): config is HeaderBackgroundImageConfig {
-  return config.hasOwnProperty("headerBackgroundImage");
+function isBackgroundImageOriginConfig(
+  config: SingleColorConfig
+): config is BackgroundImageOriginConfig {
+  return config.hasOwnProperty('backgroundImageOrigin');
 }
-function isHeaderBackgroundImageRepeatConfig(config: SingleColorConfig): config is HeaderBackgroundImageRepeatConfig {
-  return config.hasOwnProperty("headerBackgroundImageRepeat");
+
+function isHeaderBackgroundImageConfig(
+  config: SingleColorConfig
+): config is HeaderBackgroundImageConfig {
+  return config.hasOwnProperty('headerBackgroundImage');
 }
-function isHeaderBackgroundImageSizeConfig(config: SingleColorConfig): config is HeaderBackgroundImageSizeConfig {
-  return config.hasOwnProperty("headerBackgroundImageSize");
+function isHeaderBackgroundImageRepeatConfig(
+  config: SingleColorConfig
+): config is HeaderBackgroundImageRepeatConfig {
+  return config.hasOwnProperty('headerBackgroundImageRepeat');
 }
-function isHeaderBackgroundImagePositionConfig(config: SingleColorConfig): config is HeaderBackgroundImagePositionConfig {
-  return config.hasOwnProperty("headerBackgroundImagePosition");
+function isHeaderBackgroundImageSizeConfig(
+  config: SingleColorConfig
+): config is HeaderBackgroundImageSizeConfig {
+  return config.hasOwnProperty('headerBackgroundImageSize');
 }
-function isHeaderBackgroundImageOriginConfig(config: SingleColorConfig): config is HeaderBackgroundImageOriginConfig {
-  return config.hasOwnProperty("headerBackgroundImageOrigin");
+function isHeaderBackgroundImagePositionConfig(
+  config: SingleColorConfig
+): config is HeaderBackgroundImagePositionConfig {
+  return config.hasOwnProperty('headerBackgroundImagePosition');
 }
-function isFooterBackgroundImageConfig(config: SingleColorConfig): config is FooterBackgroundImageConfig {
-  return config.hasOwnProperty("footerBackgroundImage");
+function isHeaderBackgroundImageOriginConfig(
+  config: SingleColorConfig
+): config is HeaderBackgroundImageOriginConfig {
+  return config.hasOwnProperty('headerBackgroundImageOrigin');
 }
-function isFooterBackgroundImageRepeatConfig(config: SingleColorConfig): config is FooterBackgroundImageRepeatConfig {
-  return config.hasOwnProperty("footerBackgroundImageRepeat");
+function isFooterBackgroundImageConfig(
+  config: SingleColorConfig
+): config is FooterBackgroundImageConfig {
+  return config.hasOwnProperty('footerBackgroundImage');
 }
-function isFooterBackgroundImageSizeConfig(config: SingleColorConfig): config is FooterBackgroundImageSizeConfig {
-  return config.hasOwnProperty("footerBackgroundImageSize");
+function isFooterBackgroundImageRepeatConfig(
+  config: SingleColorConfig
+): config is FooterBackgroundImageRepeatConfig {
+  return config.hasOwnProperty('footerBackgroundImageRepeat');
 }
-function isFooterBackgroundImagePositionConfig(config: SingleColorConfig): config is FooterBackgroundImagePositionConfig {
-  return config.hasOwnProperty("footerBackgroundImagePosition");
+function isFooterBackgroundImageSizeConfig(
+  config: SingleColorConfig
+): config is FooterBackgroundImageSizeConfig {
+  return config.hasOwnProperty('footerBackgroundImageSize');
 }
-function isFooterBackgroundImageOriginConfig(config: SingleColorConfig): config is FooterBackgroundImageOriginConfig {
-  return config.hasOwnProperty("footerBackgroundImageOrigin");
+function isFooterBackgroundImagePositionConfig(
+  config: SingleColorConfig
+): config is FooterBackgroundImagePositionConfig {
+  return config.hasOwnProperty('footerBackgroundImagePosition');
+}
+function isFooterBackgroundImageOriginConfig(
+  config: SingleColorConfig
+): config is FooterBackgroundImageOriginConfig {
+  return config.hasOwnProperty('footerBackgroundImageOrigin');
 }
 
 function isTextSizeConfig(config: SingleColorConfig): config is TextSizeConfig {
-  return config.hasOwnProperty("textSize");
+  return config.hasOwnProperty('textSize');
 }
 
-function isTextWeightConfig(config: SingleColorConfig): config is TextWeightConfig {
-  return config.hasOwnProperty("textWeight");
+function isTextWeightConfig(
+  config: SingleColorConfig
+): config is TextWeightConfig {
+  return config.hasOwnProperty('textWeight');
 }
 
-function isFontFamilyConfig(config: SingleColorConfig): config is FontFamilyConfig {
-  return config.hasOwnProperty("fontFamily");
+function isFontFamilyConfig(
+  config: SingleColorConfig
+): config is FontFamilyConfig {
+  return config.hasOwnProperty('fontFamily');
 }
-function isFontStyleConfig(config: SingleColorConfig): config is FontStyleConfig {
-  return config.hasOwnProperty("fontStyle");
+function isFontStyleConfig(
+  config: SingleColorConfig
+): config is FontStyleConfig {
+  return config.hasOwnProperty('fontStyle');
 }
-function isTextTransformConfig(config: SingleColorConfig): config is TextTransformConfig {
-  return config.hasOwnProperty("textTransform");
+function isTextTransformConfig(
+  config: SingleColorConfig
+): config is TextTransformConfig {
+  return config.hasOwnProperty('textTransform');
 }
-function isTextDecorationConfig(config: SingleColorConfig): config is TextDecorationConfig {
-  return config.hasOwnProperty("textDecoration");
+function isTextDecorationConfig(
+  config: SingleColorConfig
+): config is TextDecorationConfig {
+  return config.hasOwnProperty('textDecoration');
 }
-function isBorderStyleConfig(config: SingleColorConfig): config is borderStyleConfig {
-  return config.hasOwnProperty("borderStyle");
+function isBorderStyleConfig(
+  config: SingleColorConfig
+): config is borderStyleConfig {
+  return config.hasOwnProperty('borderStyle');
 }
 
 function isMarginConfig(config: SingleColorConfig): config is MarginConfig {
-  return config.hasOwnProperty("margin");
+  return config.hasOwnProperty('margin');
+}
+
+function isBoxShadowConfig(
+  config: SingleColorConfig
+): config is BoxShadowConfig {
+  return config.hasOwnProperty('boxShadow');
+}
+
+function isBoxShadowColorConfig(
+  config: SingleColorConfig
+): config is BoxShadowColorConfig {
+  return config.hasOwnProperty('boxShadowColor');
+}
+
+function isAnimationIterationCountConfig(
+  config: SingleColorConfig
+): config is AnimationIterationCountConfig {
+  return config.hasOwnProperty('animationIterationCount');
+}
+
+function isOpacityConfig(config: SingleColorConfig): config is OpacityConfig {
+  return config.hasOwnProperty('opacity');
+}
+
+function isAnimationConfig(
+  config: SingleColorConfig
+): config is AnimationConfig {
+  return config.hasOwnProperty('animation');
+}
+
+function isAnimationDelayConfig(
+  config: SingleColorConfig
+): config is AnimationDelayConfig {
+  return config.hasOwnProperty('animationDelay');
+}
+
+function isAnimationDurationConfig(
+  config: SingleColorConfig
+): config is AnimationDurationConfig {
+  return config.hasOwnProperty('animationDuration');
 }
 
 function isPaddingConfig(config: SingleColorConfig): config is PaddingConfig {
-  return config.hasOwnProperty("padding");
+  return config.hasOwnProperty('padding');
 }
 
 // function styleControl(colorConfig: Array<SingleColorConfig>) {
-type Names<T extends readonly SingleColorConfig[]> = T[number]["name"];
-export type StyleConfigType<T extends readonly SingleColorConfig[]> = { [K in Names<T>]: string };
+type Names<T extends readonly SingleColorConfig[]> = T[number]['name'];
+export type StyleConfigType<T extends readonly SingleColorConfig[]> = {
+  [K in Names<T>]: string;
+};
 
 // Options[number]["value"]
 function isEmptyColor(color: string) {
@@ -175,6 +287,9 @@ function isEmptyRadius(radius: string) {
 }
 function isEmptyBorderWidth(borderWidth: string) {
   return _.isEmpty(borderWidth);
+}
+function isEmptyRotation(rotation: string) {
+  return _.isEmpty(rotation);
 }
 function isEmptyBackgroundImageConfig(backgroundImage: string) {
   return _.isEmpty(backgroundImage);
@@ -194,31 +309,47 @@ function isEmptyBackgroundImageOriginConfig(backgroundImageOrigin: string) {
 function isEmptyHeaderBackgroundImageConfig(headerBackgroundImage: string) {
   return _.isEmpty(headerBackgroundImage);
 }
-function isEmptyHeaderBackgroundImageRepeatConfig(headerBackgroundImageRepeat: string) {
+function isEmptyHeaderBackgroundImageRepeatConfig(
+  headerBackgroundImageRepeat: string
+) {
   return _.isEmpty(headerBackgroundImageRepeat);
 }
-function isEmptyHeaderBackgroundImageSizeConfig(headerBackgroundImageSize: string) {
+function isEmptyHeaderBackgroundImageSizeConfig(
+  headerBackgroundImageSize: string
+) {
   return _.isEmpty(headerBackgroundImageSize);
 }
-function isEmptyHeaderBackgroundImagePositionConfig(headerBackgroundImagePosition: string) {
+function isEmptyHeaderBackgroundImagePositionConfig(
+  headerBackgroundImagePosition: string
+) {
   return _.isEmpty(headerBackgroundImagePosition);
 }
-function isEmptyHeaderBackgroundImageOriginConfig(headerBackgroundImageOrigin: string) {
+function isEmptyHeaderBackgroundImageOriginConfig(
+  headerBackgroundImageOrigin: string
+) {
   return _.isEmpty(headerBackgroundImageOrigin);
 }
 function isEmptyFooterBackgroundImageConfig(footerBackgroundImage: string) {
   return _.isEmpty(footerBackgroundImage);
 }
-function isEmptyFooterBackgroundImageRepeatConfig(footerBackgroundImageRepeat: string) {
+function isEmptyFooterBackgroundImageRepeatConfig(
+  footerBackgroundImageRepeat: string
+) {
   return _.isEmpty(footerBackgroundImageRepeat);
 }
-function isEmptyFooterBackgroundImageSizeConfig(footerBackgroundImageSize: string) {
+function isEmptyFooterBackgroundImageSizeConfig(
+  footerBackgroundImageSize: string
+) {
   return _.isEmpty(footerBackgroundImageSize);
 }
-function isEmptyFooterBackgroundImagePositionConfig(footerBackgroundImagePosition: string) {
+function isEmptyFooterBackgroundImagePositionConfig(
+  footerBackgroundImagePosition: string
+) {
   return _.isEmpty(footerBackgroundImagePosition);
 }
-function isEmptyFooterBackgroundImageOriginConfig(footerBackgroundImageOrigin: string) {
+function isEmptyFooterBackgroundImageOriginConfig(
+  footerBackgroundImageOrigin: string
+) {
   return _.isEmpty(footerBackgroundImageOrigin);
 }
 
@@ -244,9 +375,38 @@ function isEmptyBorderStyle(borderStyle: string) {
   return _.isEmpty(borderStyle);
 }
 
+function isEmptyAnimationIterationCount(animationIterationCount: string) {
+  return _.isEmpty(animationIterationCount);
+}
+
+function isEmptyOpacity(opacity: string) {
+  return _.isEmpty(opacity);
+}
+
+function isEmptyBoxShadow(boxShadow: string) {
+  return _.isEmpty(boxShadow);
+}
+
+function isEmptyBoxShadowColor(boxShadowColor: string) {
+  return _.isEmpty(boxShadowColor);
+}
+
+function isEmptyAnimation(animation: string) {
+  return _.isEmpty(animation);
+}
+
+function isEmptyAnimationDelay(animationDelay: string) {
+  return _.isEmpty(animationDelay);
+}
+
+function isEmptyAnimationDuration(animationDuration: string) {
+  return _.isEmpty(animationDuration);
+}
+
 function isEmptyMargin(margin: string) {
   return _.isEmpty(margin);
 }
+
 function isEmptyPadding(padding: string) {
   return _.isEmpty(padding);
 }
@@ -260,7 +420,10 @@ function calcColors<ColorMap extends Record<string, string>>(
   theme?: ThemeDetail,
   bgColor?: string
 ) {
-  const themeWithDefault = (theme || defaultTheme) as unknown as Record<string, string>;
+  const themeWithDefault = (theme || defaultTheme) as unknown as Record<
+    string,
+    string
+  >;
   // Cover what is not there for the first pass
   let res: Record<string, string> = {};
   colorConfigs.forEach((config) => {
@@ -273,63 +436,113 @@ function calcColors<ColorMap extends Record<string, string>>(
       res[name] = props[name];
       return;
     }
-    if (!isEmptyBackgroundImageConfig(props[name]) && isBackgroundImageConfig(config)) {
+    if (!isEmptyRotation(props[name]) && isRotationConfig(config)) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyBackgroundImageRepeatConfig(props[name]) && isBackgroundImageRepeatConfig(config)) {
+
+    if (
+      !isEmptyBackgroundImageConfig(props[name]) &&
+      isBackgroundImageConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyBackgroundImageSizeConfig(props[name]) && isBackgroundImageSizeConfig(config)) {
+    if (
+      !isEmptyBackgroundImageRepeatConfig(props[name]) &&
+      isBackgroundImageRepeatConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyBackgroundImagePositionConfig(props[name]) && isBackgroundImagePositionConfig(config)) {
+    if (
+      !isEmptyBackgroundImageSizeConfig(props[name]) &&
+      isBackgroundImageSizeConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyBackgroundImageOriginConfig(props[name]) && isBackgroundImageOriginConfig(config)) {
+    if (
+      !isEmptyBackgroundImagePositionConfig(props[name]) &&
+      isBackgroundImagePositionConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyHeaderBackgroundImageConfig(props[name]) && isHeaderBackgroundImageConfig(config)) {
+    if (
+      !isEmptyBackgroundImageOriginConfig(props[name]) &&
+      isBackgroundImageOriginConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyHeaderBackgroundImageRepeatConfig(props[name]) && isHeaderBackgroundImageRepeatConfig(config)) {
+    if (
+      !isEmptyHeaderBackgroundImageConfig(props[name]) &&
+      isHeaderBackgroundImageConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyHeaderBackgroundImageSizeConfig(props[name]) && isHeaderBackgroundImageSizeConfig(config)) {
+    if (
+      !isEmptyHeaderBackgroundImageRepeatConfig(props[name]) &&
+      isHeaderBackgroundImageRepeatConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyHeaderBackgroundImagePositionConfig(props[name]) && isHeaderBackgroundImagePositionConfig(config)) {
+    if (
+      !isEmptyHeaderBackgroundImageSizeConfig(props[name]) &&
+      isHeaderBackgroundImageSizeConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyHeaderBackgroundImageOriginConfig(props[name]) && isHeaderBackgroundImageOriginConfig(config)) {
+    if (
+      !isEmptyHeaderBackgroundImagePositionConfig(props[name]) &&
+      isHeaderBackgroundImagePositionConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyFooterBackgroundImageConfig(props[name]) && isFooterBackgroundImageConfig(config)) {
+    if (
+      !isEmptyHeaderBackgroundImageOriginConfig(props[name]) &&
+      isHeaderBackgroundImageOriginConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyFooterBackgroundImageRepeatConfig(props[name]) && isFooterBackgroundImageRepeatConfig(config)) {
+    if (
+      !isEmptyFooterBackgroundImageConfig(props[name]) &&
+      isFooterBackgroundImageConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyFooterBackgroundImageSizeConfig(props[name]) && isFooterBackgroundImageSizeConfig(config)) {
+    if (
+      !isEmptyFooterBackgroundImageRepeatConfig(props[name]) &&
+      isFooterBackgroundImageRepeatConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyFooterBackgroundImagePositionConfig(props[name]) && isFooterBackgroundImagePositionConfig(config)) {
+    if (
+      !isEmptyFooterBackgroundImageSizeConfig(props[name]) &&
+      isFooterBackgroundImageSizeConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
-    if (!isEmptyFooterBackgroundImageOriginConfig(props[name]) && isFooterBackgroundImageOriginConfig(config)) {
+    if (
+      !isEmptyFooterBackgroundImagePositionConfig(props[name]) &&
+      isFooterBackgroundImagePositionConfig(config)
+    ) {
+      res[name] = props[name];
+      return;
+    }
+    if (
+      !isEmptyFooterBackgroundImageOriginConfig(props[name]) &&
+      isFooterBackgroundImageOriginConfig(config)
+    ) {
       res[name] = props[name];
       return;
     }
@@ -365,6 +578,40 @@ function calcColors<ColorMap extends Record<string, string>>(
       res[name] = props[name];
       return;
     }
+    if (!isEmptyBoxShadow(props[name]) && isBoxShadowConfig(config)) {
+      res[name] = props[name];
+      return;
+    }
+    if (!isEmptyBoxShadowColor(props[name]) && isBoxShadowColorConfig(config)) {
+      res[name] = props[name];
+      return;
+    }
+    if (
+      !isEmptyAnimationIterationCount(props[name]) &&
+      isAnimationIterationCountConfig(config)
+    ) {
+      res[name] = props[name];
+      return;
+    }
+    if (!isEmptyOpacity(props[name]) && isOpacityConfig(config)) {
+      res[name] = props[name];
+      return;
+    }
+    if (!isEmptyAnimation(props[name]) && isAnimationConfig(config)) {
+      res[name] = props[name];
+      return;
+    }
+    if (!isEmptyAnimationDelay(props[name]) && isAnimationDelayConfig(config)) {
+      res[name] = props[name];
+      return;
+    }
+    if (
+      !isEmptyAnimationDuration(props[name]) &&
+      isAnimationDurationConfig(config)
+    ) {
+      res[name] = props[name];
+      return;
+    }
     if (!isEmptyPadding(props[name]) && isPaddingConfig(config)) {
       res[name] = props[name];
       return;
@@ -385,6 +632,9 @@ function calcColors<ColorMap extends Record<string, string>>(
     }
     if (isBorderWidthConfig(config)) {
       res[name] = '0px';
+    }
+    if (isRotationConfig(config)) {
+      res[name] = '0deg';
     }
     if (isBackgroundImageConfig(config)) {
       res[name] = '';
@@ -443,19 +693,40 @@ function calcColors<ColorMap extends Record<string, string>>(
       res[name] = themeWithDefault[config.fontFamily] || 'sans-serif';
     }
     if (isFontStyleConfig(config)) {
-      res[name] = themeWithDefault[config.fontStyle] || 'normal'
+      res[name] = themeWithDefault[config.fontStyle] || 'normal';
     }
-    if(isTextTransformConfig(config)){
-      res[name] = themeWithDefault[config.textTransform] || 'none'
+    if (isTextTransformConfig(config)) {
+      res[name] = themeWithDefault[config.textTransform] || 'none';
     }
-    if(isTextDecorationConfig(config)){
-      res[name] = themeWithDefault[config.textDecoration] || 'none'
+    if (isTextDecorationConfig(config)) {
+      res[name] = themeWithDefault[config.textDecoration] || 'none';
     }
-    if(isBorderStyleConfig(config)){
-      res[name] = themeWithDefault[config.borderStyle] || 'dashed'
+    if (isBorderStyleConfig(config)) {
+      res[name] = themeWithDefault[config.borderStyle] || 'dashed';
     }
     if (isMarginConfig(config)) {
       res[name] = themeWithDefault[config.margin];
+    }
+    if (isBoxShadowConfig(config)) {
+      res[name] = themeWithDefault[config.boxShadow];
+    }
+    if (isBoxShadowColorConfig(config)) {
+      res[name] = themeWithDefault[config.boxShadowColor];
+    }
+    if (isAnimationIterationCountConfig(config)) {
+      res[name] = themeWithDefault[config.animationIterationCount];
+    }
+    if (isOpacityConfig(config)) {
+      res[name] = themeWithDefault[config.opacity];
+    }
+    if (isAnimationConfig(config)) {
+      res[name] = themeWithDefault[config.animation];
+    }
+    if (isAnimationDelayConfig(config)) {
+      res[name] = themeWithDefault[config.animationDelay];
+    }
+    if (isAnimationDurationConfig(config)) {
+      res[name] = themeWithDefault[config.animationDuration];
     }
     if (isPaddingConfig(config)) {
       res[name] = themeWithDefault[config.padding];
@@ -470,8 +741,10 @@ function calcColors<ColorMap extends Record<string, string>>(
     if (isDepColorConfig(config)) {
       if (config.depType && config.depType === DEP_TYPE.CONTRAST_TEXT) {
         // bgColor is the background color of the container component, equivalent to canvas
-        let depKey = config.depName ? res[config.depName] : themeWithDefault[config.depTheme!];
-        if (bgColor && config.depTheme === "canvas") {
+        let depKey = config.depName
+          ? res[config.depName]
+          : themeWithDefault[config.depTheme!];
+        if (bgColor && config.depTheme === 'canvas') {
           depKey = bgColor;
         }
         res[name] = config.transformer(
@@ -479,7 +752,11 @@ function calcColors<ColorMap extends Record<string, string>>(
           themeWithDefault.textDark,
           themeWithDefault.textLight
         );
-      } else if (config?.depType === DEP_TYPE.SELF && config.depTheme === "canvas" && bgColor) {
+      } else if (
+        config?.depType === DEP_TYPE.SELF &&
+        config.depTheme === 'canvas' &&
+        bgColor
+      ) {
         res[name] = bgColor;
       } else {
         const rest = [];
@@ -563,14 +840,114 @@ const StyleContent = styled.div`
   }
 `;
 
-const RadiusIcon = styled(IconRadius)` margin: 0 8px 0 -2px;`;
-const BorderIcon = styled(BorderWidthIcon)` margin: 0 8px 0 -3px; padding: 3px;`;
-const MarginIcon = styled(ExpandIcon)` margin: 0 8px 0 2px;`;
-const PaddingIcon = styled(CompressIcon)`	margin: 0 8px 0 2px;`;
-const StyledTextSizeIcon = styled(TextSizeIcon)` margin: 0 8px 0 -3px; padding: 3px;`;
-const StyledFontFamilyIcon = styled(FontFamilyIcon)` margin: 0 8px 0 -3px; padding: 3px;`;
-const StyledTextWeightIcon = styled(TextWeightIcon)` margin: 0 8px 0 -3px; padding: 3px;`;
-const StyledBackgroundImageIcon = styled(ImageCompIconSmall)` margin: 0 0px 0 -12px;`;
+const MarginIcon = styled(ExpandIcon)`
+  margin: 0 8px 0 2px;
+  color: #888;
+`;
+const PaddingIcon = styled(CompressIcon)`
+  margin: 0 8px 0 2px;
+  color: #888;
+`;
+const RadiusPropIcon = styled(BorderRadiusIcon)`
+  width: 24px;
+  margin: 0 11px 0 0px;
+  color: #888;
+`;
+const BorderPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+const BorderStylePropIcon = styled(BorderStyleIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const StyledBackgroundImageIcon = styled(ImageCompIconSmall)`
+  margin: 0 6px 0 0;
+  padding: 2px;
+  color: #888;
+`;
+
+const AnimationIterationCountPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const OpacityPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const BoxShadowColorPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const BoxShadowPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const AnimationPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const AnimationDelayPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const AnimationDurationPropIcon = styled(BorderWidthIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const RotationPropIcon = styled(RotationIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+
+const StyledTextSizeIcon = styled(TextSizeIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+const StyledTextTransformIcon = styled(TextTransformationIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+const StyledFontFamilyIcon = styled(FontFamilyIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+const StyledTextWeightIcon = styled(TextWeightIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+const StyledTextStyleIcon = styled(TextStyleIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
+const StyledTextDecorationPropIcon = styled(TextDecorationIcon)`
+  margin: 0 8px 0 -3px;
+  padding: 3px;
+  color: #888;
+`;
 
 const ResetIcon = styled(IconReset)`
   &:hover g g {
@@ -578,43 +955,53 @@ const ResetIcon = styled(IconReset)`
   }
 `;
 
-export function styleControl<T extends readonly SingleColorConfig[]>(colorConfigs: T) {
-  type ColorMap = { [K in Names<T>]: string };
+export function styleControl<T extends readonly SingleColorConfig[]>(
+  colorConfigs: T
+) {
+  type ColorMap = {[K in Names<T>]: string};
   const childrenMap: any = {};
   colorConfigs.map((config) => {
     const name: Names<T> = config.name;
     if (
-      name === "radius" ||
-      name === "borderWidth" ||
-      name === "cardRadius" ||
-      name === "textSize" ||
-      name === "textWeight" ||
-      name === "textTransform" ||
-      name === "textDecoration" ||
-      name === "fontFamily" ||
-      name === "borderStyle" ||
-      name === "fontStyle" ||
-      name === "backgroundImage" ||
-      name === "backgroundImageRepeat" ||
-      name === "backgroundImageSize" ||
-      name === "backgroundImagePosition" ||
-      name === "backgroundImageOrigin" ||
-      name === "headerBackgroundImage" ||
-      name === "headerBackgroundImageRepeat" ||
-      name === "headerBackgroundImageSize" ||
-      name === "headerBackgroundImagePosition" ||
-      name === "headerBackgroundImageOrigin" ||
-      name === "footerBackgroundImage" ||
-      name === "footerBackgroundImageRepeat" ||
-      name === "footerBackgroundImageSize" ||
-      name === "footerBackgroundImagePosition" ||
-      name === "footerBackgroundImageOrigin" ||
-      name === "margin" ||
-      name === "padding" ||
-      name === "containerHeaderPadding" ||
-      name === "containerSiderPadding" ||
-      name === "containerFooterPadding" ||
-      name === "containerBodyPadding"
+      name === 'radius' ||
+      name === 'borderWidth' ||
+      name === 'boxShadow' ||
+      name === 'boxShadowColor' ||
+      name === 'animationIterationCount' ||
+      name === 'opacity' ||
+      name === 'animation' ||
+      name === 'animationDelay' ||
+      name === 'animationDuration' ||
+      name === 'rotation' ||
+      name === 'cardRadius' ||
+      name === 'textSize' ||
+      name === 'textWeight' ||
+      name === 'textTransform' ||
+      name === 'textDecoration' ||
+      name === 'fontFamily' ||
+      name === 'borderStyle' ||
+      name === 'fontStyle' ||
+      name === 'backgroundImage' ||
+      name === 'backgroundImageRepeat' ||
+      name === 'backgroundImageSize' ||
+      name === 'backgroundImagePosition' ||
+      name === 'backgroundImageOrigin' ||
+      name === 'headerBackgroundImage' ||
+      name === 'headerBackgroundImageRepeat' ||
+      name === 'headerBackgroundImageSize' ||
+      name === 'headerBackgroundImagePosition' ||
+      name === 'headerBackgroundImageOrigin' ||
+      name === 'footerBackgroundImage' ||
+      name === 'footerBackgroundImageRepeat' ||
+      name === 'footerBackgroundImageSize' ||
+      name === 'footerBackgroundImagePosition' ||
+      name === 'footerBackgroundImageOrigin' ||
+      name === 'margin' ||
+      name === 'padding' ||
+      name === 'containerHeaderPadding' ||
+      name === 'containerSiderPadding' ||
+      name === 'containerFooterPadding' ||
+      name === 'containerBodyPadding'
     ) {
       childrenMap[name] = StringControl;
     } else {
@@ -622,9 +1009,9 @@ export function styleControl<T extends readonly SingleColorConfig[]>(colorConfig
     }
   });
   // [K in Names<T>]: new (params: CompParams<any>) => ColorControl;
-  const label = trans("prop.style");
+  const label = trans('prop.style');
   return new ControlItemCompBuilder(
-    childrenMap as ToConstructor<{ [K in Names<T>]: ColorControl }>,
+    childrenMap as ToConstructor<{[K in Names<T>]: ColorControl}>,
     (props) => {
       // const x = useContext(CompNameContext);
       const theme = useContext(ThemeContext);
@@ -632,7 +1019,7 @@ export function styleControl<T extends readonly SingleColorConfig[]>(colorConfig
       return calcColors(props as ColorMap, colorConfigs, theme?.theme, bgColor);
     }
   )
-    .setControlItemData({ filterText: label, searchChild: true })
+    .setControlItemData({filterText: label, searchChild: true})
     .setPropertyViewFn((children) => {
       const theme = useContext(ThemeContext);
       const bgColor = useContext(BackgroundColorContext);
@@ -644,7 +1031,8 @@ export function styleControl<T extends readonly SingleColorConfig[]>(colorConfig
         theme?.theme,
         bgColor
       );
-      const showReset = Object.values(childrenToProps(children)).findIndex((item) => item) > -1;
+      const showReset =
+        Object.values(childrenToProps(children)).findIndex((item) => item) > -1;
       return (
         <>
           <TitleDiv>
@@ -655,39 +1043,52 @@ export function styleControl<T extends readonly SingleColorConfig[]>(colorConfig
                   colorConfigs.map((item) => {
                     const name: Names<T> = item.name;
                     if (
-                      name === "radius" ||
-                      name === "margin" ||
-                      name === "padding" ||
-                      name === "containerHeaderPadding" ||
-                      name === "containerSiderPadding" ||
-                      name === "containerFooterPadding" ||
-                      name === "containerBodyPadding" ||
-                      name === "borderWidth" ||
-                      name === "backgroundImage" ||
-                      name === "backgroundImageRepeat" ||
-                      name === "backgroundImageSize" ||
-                      name === "backgroundImagePosition" ||
-                      name === "backgroundImageOrigin" ||
-                      name === "headerBackgroundImage" ||
-                      name === "headerBackgroundImageRepeat" ||
-                      name === "headerBackgroundImageSize" ||
-                      name === "headerBackgroundImagePosition" ||
-                      name === "headerBackgroundImageOrigin" ||
-                      name === "footerBackgroundImage" ||
-                      name === "footerBackgroundImageRepeat" ||
-                      name === "footerBackgroundImageSize" ||
-                      name === "footerBackgroundImagePosition" ||
-                      name === "footerBackgroundImageOrigin"
+                      name === 'radius' ||
+                      name === 'margin' ||
+                      name === 'padding' ||
+                      name === 'containerHeaderPadding' ||
+                      name === 'containerSiderPadding' ||
+                      name === 'containerFooterPadding' ||
+                      name === 'containerBodyPadding' ||
+                      name === 'borderWidth' ||
+                      name === 'animationIterationCount' ||
+                      name === 'opacity' ||
+                      name === 'boxShadowColor' ||
+                      name === 'boxShadow' ||
+                      name === 'animation' ||
+                      name === 'animationDelay' ||
+                      name === 'animationDuration' ||
+                      name === 'rotation' ||
+                      name === 'backgroundImage' ||
+                      name === 'backgroundImageRepeat' ||
+                      name === 'backgroundImageSize' ||
+                      name === 'backgroundImagePosition' ||
+                      name === 'backgroundImageOrigin' ||
+                      name === 'headerBackgroundImage' ||
+                      name === 'headerBackgroundImageRepeat' ||
+                      name === 'headerBackgroundImageSize' ||
+                      name === 'headerBackgroundImagePosition' ||
+                      name === 'headerBackgroundImageOrigin' ||
+                      name === 'footerBackgroundImage' ||
+                      name === 'footerBackgroundImageRepeat' ||
+                      name === 'footerBackgroundImageSize' ||
+                      name === 'footerBackgroundImagePosition' ||
+                      name === 'footerBackgroundImageOrigin'
                     ) {
-                      children[name]?.dispatchChangeValueAction("");
+                      children[name]?.dispatchChangeValueAction('');
                     } else {
                       children[name] &&
-                        children[name].dispatch(children[name].changeValueAction(""));
+                        children[name].dispatch(
+                          children[name].changeValueAction('')
+                        );
                     }
                   });
                 }}
               >
-                <Tooltip placement="topRight" title={trans("style.resetTooltip")}>
+                <Tooltip
+                  placement="topRight"
+                  title={trans('style.resetTooltip')}
+                >
                   <ResetIcon title="" />
                 </Tooltip>
               </span>
@@ -698,141 +1099,333 @@ export function styleControl<T extends readonly SingleColorConfig[]>(colorConfig
               .filter(
                 (config) =>
                   !config.platform ||
-                  (isMobile && config.platform === "mobile") ||
-                  (!isMobile && config.platform === "pc")
+                  (isMobile && config.platform === 'mobile') ||
+                  (!isMobile && config.platform === 'pc')
               )
               .map((config, index) => {
                 const name: Names<T> = config.name;
-                let depMsg = (config as SimpleColorConfig)["color"];
+                let depMsg = (config as SimpleColorConfig)['color'];
                 if (isDepColorConfig(config)) {
                   if (config.depType === DEP_TYPE.CONTRAST_TEXT) {
-                    depMsg = trans("style.contrastText");
-                  } else if (config.depType === DEP_TYPE.SELF && config.depTheme) {
+                    depMsg = trans('style.contrastText');
+                  } else if (
+                    config.depType === DEP_TYPE.SELF &&
+                    config.depTheme
+                  ) {
                     depMsg = getThemeDetailName(config.depTheme);
                   } else {
-                    depMsg = trans("style.generated");
+                    depMsg = trans('style.generated');
                   }
                 }
                 return controlItem(
-                  { filterText: config.label },
+                  {filterText: config.label},
                   <div key={index}>
-                    {(name === "radius" ||
-                      name === "gap" ||
-                      name === "cardRadius")
+                    {name === 'radius' ||
+                    name === 'gap' ||
+                    name === 'cardRadius'
                       ? (
-                        children[name] as InstanceType<typeof StringControl>
-                      ).propertyView({
-                        label: config.label,
-                        preInputNode: <RadiusIcon title="Radius" />,
-                        placeholder: props[name],
-                      })
-                      : name === "borderWidth"
-                        ? (
                           children[name] as InstanceType<typeof StringControl>
                         ).propertyView({
                           label: config.label,
-                          preInputNode: <BorderIcon title="Border-Width" />,
+                          preInputNode: <RadiusPropIcon title="Radius" />,
                           placeholder: props[name],
-                        }) : name === "borderStyle"
-                          ? (
+                        })
+                      : name === 'borderWidth'
+                        ? (
                             children[name] as InstanceType<typeof StringControl>
                           ).propertyView({
                             label: config.label,
-                            preInputNode: <BorderIcon title="Border-Style" />,
+                            preInputNode: (
+                              <BorderPropIcon title="Border-Width" />
+                            ),
                             placeholder: props[name],
                           })
-                          : name === "margin"
-                            ? (
-                              children[name] as InstanceType<typeof StringControl>
+                        : name === 'borderStyle'
+                          ? (
+                              children[name] as InstanceType<
+                                typeof StringControl
+                              >
                             ).propertyView({
                               label: config.label,
-                              preInputNode: <MarginIcon title="Margin" />,
+                              preInputNode: (
+                                <BorderStylePropIcon title="Border-Style" />
+                              ),
                               placeholder: props[name],
                             })
-                            : name === "textSize" ||
-                              name === "padding" ||
-                              name === "containerHeaderPadding" ||
-                              name === "containerSiderPadding" ||
-                              name === "containerFooterPadding" ||
-                              name === "containerBodyPadding"
-                              ? (
-                                children[name] as InstanceType<typeof StringControl>
+                          : name === 'animationIterationCount'
+                            ? (
+                                children[name] as InstanceType<
+                                  typeof StringControl
+                                >
                               ).propertyView({
                                 label: config.label,
-                                preInputNode: <PaddingIcon title="Padding" />,
+                                preInputNode: (
+                                  <AnimationIterationCountPropIcon title="AnimationIterationCount-Type" />
+                                ),
                                 placeholder: props[name],
                               })
-                              : name === "textSize"
-                                ? (
-                                  children[name] as InstanceType<typeof StringControl>
+                            : name === 'opacity'
+                              ? (
+                                  children[name] as InstanceType<
+                                    typeof StringControl
+                                  >
                                 ).propertyView({
                                   label: config.label,
-                                  preInputNode: <StyledTextSizeIcon title="Font Size" />,
+                                  preInputNode: (
+                                    <OpacityPropIcon title="Opacity-Type" />
+                                  ),
                                   placeholder: props[name],
                                 })
-                                : name === "textWeight"
-                                  ? (
-                                    children[name] as InstanceType<typeof StringControl>
+                              : name === 'boxShadowColor'
+                                ? (
+                                    children[name] as InstanceType<
+                                      typeof StringControl
+                                    >
                                   ).propertyView({
                                     label: config.label,
-                                    preInputNode: <StyledTextWeightIcon title="Font Weight" />,
+                                    preInputNode: (
+                                      <BoxShadowColorPropIcon title="BoxShadowColor-Type" />
+                                    ),
                                     placeholder: props[name],
                                   })
-                                  : name === "fontFamily"
-                                    ? (
-                                      children[name] as InstanceType<typeof StringControl>
+                                : name === 'boxShadow'
+                                  ? (
+                                      children[name] as InstanceType<
+                                        typeof StringControl
+                                      >
                                     ).propertyView({
                                       label: config.label,
-                                      preInputNode: <StyledFontFamilyIcon title="Font Family" />,
+                                      preInputNode: (
+                                        <BoxShadowPropIcon title="BoxShadow-Type" />
+                                      ),
                                       placeholder: props[name],
-                                    }) : name === "textDecoration"
-                                      ? (
-                                        children[name] as InstanceType<typeof StringControl>
+                                    })
+                                  : name === 'animation'
+                                    ? (
+                                        children[name] as InstanceType<
+                                          typeof StringControl
+                                        >
                                       ).propertyView({
                                         label: config.label,
-                                        preInputNode: <StyledFontFamilyIcon title="Text Decoration" />,
+                                        preInputNode: (
+                                          <AnimationPropIcon title="Animation-Type" />
+                                        ),
                                         placeholder: props[name],
-                                      }) : name === "textTransform"
-                                        ? (
-                                          children[name] as InstanceType<typeof StringControl>
+                                      })
+                                    : name === 'animationDelay'
+                                      ? (
+                                          children[name] as InstanceType<
+                                            typeof StringControl
+                                          >
                                         ).propertyView({
                                           label: config.label,
-                                          preInputNode: <StyledFontFamilyIcon title="Text Transform" />,
+                                          preInputNode: (
+                                            <AnimationDelayPropIcon title="AnimationDelay-Type" />
+                                          ),
                                           placeholder: props[name],
                                         })
-                                        : name === "fontStyle"
-                                          ? (
-                                            children[name] as InstanceType<typeof StringControl>
+                                      : name === 'animationDuration'
+                                        ? (
+                                            children[name] as InstanceType<
+                                              typeof StringControl
+                                            >
                                           ).propertyView({
                                             label: config.label,
-                                            preInputNode: <StyledFontFamilyIcon title="Font Style" />,
+                                            preInputNode: (
+                                              <AnimationDurationPropIcon title="AnimationDuration-Type" />
+                                            ),
                                             placeholder: props[name],
                                           })
-                                          : name === "backgroundImage" || name === "headerBackgroundImage" || name === "footerBackgroundImage"
-                                            ? (
-                                              children[name] as InstanceType<typeof StringControl>
+                                        : name === 'margin'
+                                          ? (
+                                              children[name] as InstanceType<
+                                                typeof StringControl
+                                              >
                                             ).propertyView({
                                               label: config.label,
-                                              preInputNode: <StyledBackgroundImageIcon title="Background Image" />,
+                                              preInputNode: (
+                                                <MarginIcon title="Margin" />
+                                              ),
                                               placeholder: props[name],
                                             })
-                                            : name === "backgroundImageRepeat" || name === "headerBackgroundImageRepeat" || name === "footerBackgroundImageRepeat"
-                                              ? (
-                                                children[name] as InstanceType<typeof StringControl>
+                                          : name === 'padding' ||
+                                              name ===
+                                                'containerHeaderPadding' ||
+                                              name ===
+                                                'containerSiderPadding' ||
+                                              name ===
+                                                'containerFooterPadding' ||
+                                              name === 'containerBodyPadding'
+                                            ? (
+                                                children[name] as InstanceType<
+                                                  typeof StringControl
+                                                >
                                               ).propertyView({
                                                 label: config.label,
-                                                preInputNode: <StyledBackgroundImageIcon title="Background Image Repeat" />,
+                                                preInputNode: (
+                                                  <PaddingIcon title="Padding" />
+                                                ),
                                                 placeholder: props[name],
                                               })
-                                              : children[name].propertyView({
-                                                label: config.label,
-                                                panelDefaultColor: props[name],
-                                                // isDep: isDepColorConfig(config),	
-                                                isDep: true,
-                                                depMsg: depMsg,
-                                              })
-
-                    }
+                                            : name === 'textSize'
+                                              ? (
+                                                  children[
+                                                    name
+                                                  ] as InstanceType<
+                                                    typeof StringControl
+                                                  >
+                                                ).propertyView({
+                                                  label: config.label,
+                                                  preInputNode: (
+                                                    <StyledTextSizeIcon title="Font Size" />
+                                                  ),
+                                                  placeholder: props[name],
+                                                })
+                                              : name === 'textWeight'
+                                                ? (
+                                                    children[
+                                                      name
+                                                    ] as InstanceType<
+                                                      typeof StringControl
+                                                    >
+                                                  ).propertyView({
+                                                    label: config.label,
+                                                    preInputNode: (
+                                                      <StyledTextWeightIcon title="Font Weight" />
+                                                    ),
+                                                    placeholder: props[name],
+                                                  })
+                                                : name === 'fontFamily'
+                                                  ? (
+                                                      children[
+                                                        name
+                                                      ] as InstanceType<
+                                                        typeof StringControl
+                                                      >
+                                                    ).propertyView({
+                                                      label: config.label,
+                                                      preInputNode: (
+                                                        <StyledFontFamilyIcon title="Font Family" />
+                                                      ),
+                                                      placeholder: props[name],
+                                                    })
+                                                  : name === 'textDecoration'
+                                                    ? (
+                                                        children[
+                                                          name
+                                                        ] as InstanceType<
+                                                          typeof StringControl
+                                                        >
+                                                      ).propertyView({
+                                                        label: config.label,
+                                                        preInputNode: (
+                                                          <StyledTextDecorationPropIcon title="Text Decoration" />
+                                                        ),
+                                                        placeholder:
+                                                          props[name],
+                                                      })
+                                                    : name === 'textTransform'
+                                                      ? (
+                                                          children[
+                                                            name
+                                                          ] as InstanceType<
+                                                            typeof StringControl
+                                                          >
+                                                        ).propertyView({
+                                                          label: config.label,
+                                                          preInputNode: (
+                                                            <StyledTextTransformIcon title="Text Transform" />
+                                                          ),
+                                                          placeholder:
+                                                            props[name],
+                                                        })
+                                                      : name === 'fontStyle'
+                                                        ? (
+                                                            children[
+                                                              name
+                                                            ] as InstanceType<
+                                                              typeof StringControl
+                                                            >
+                                                          ).propertyView({
+                                                            label: config.label,
+                                                            preInputNode: (
+                                                              <StyledTextStyleIcon title="Font Style" />
+                                                            ),
+                                                            placeholder:
+                                                              props[name],
+                                                          })
+                                                        : name ===
+                                                              'backgroundImage' ||
+                                                            name ===
+                                                              'headerBackgroundImage' ||
+                                                            name ===
+                                                              'footerBackgroundImage'
+                                                          ? (
+                                                              children[
+                                                                name
+                                                              ] as InstanceType<
+                                                                typeof StringControl
+                                                              >
+                                                            ).propertyView({
+                                                              label:
+                                                                config.label,
+                                                              preInputNode: (
+                                                                <StyledBackgroundImageIcon title="Background Image" />
+                                                              ),
+                                                              placeholder:
+                                                                props[name],
+                                                            })
+                                                          : name ===
+                                                                'backgroundImageRepeat' ||
+                                                              name ===
+                                                                'headerBackgroundImageRepeat' ||
+                                                              name ===
+                                                                'footerBackgroundImageRepeat'
+                                                            ? (
+                                                                children[
+                                                                  name
+                                                                ] as InstanceType<
+                                                                  typeof StringControl
+                                                                >
+                                                              ).propertyView({
+                                                                label:
+                                                                  config.label,
+                                                                preInputNode: (
+                                                                  <StyledBackgroundImageIcon title="Background Image Repeat" />
+                                                                ),
+                                                                placeholder:
+                                                                  props[name],
+                                                              })
+                                                            : name ===
+                                                                'rotation'
+                                                              ? (
+                                                                  children[
+                                                                    name
+                                                                  ] as InstanceType<
+                                                                    typeof StringControl
+                                                                  >
+                                                                ).propertyView({
+                                                                  label:
+                                                                    config.label,
+                                                                  preInputNode:
+                                                                    (
+                                                                      <RotationPropIcon title="Rotation" />
+                                                                    ),
+                                                                  placeholder:
+                                                                    props[name],
+                                                                })
+                                                              : children[
+                                                                  name
+                                                                ].propertyView({
+                                                                  label:
+                                                                    config.label,
+                                                                  panelDefaultColor:
+                                                                    props[name],
+                                                                  // isDep: isDepColorConfig(config),
+                                                                  isDep: true,
+                                                                  depMsg:
+                                                                    depMsg,
+                                                                })}
                   </div>
                 );
               })}
@@ -843,13 +1436,15 @@ export function styleControl<T extends readonly SingleColorConfig[]>(colorConfig
     .build();
 }
 
-export function useStyle<T extends readonly SingleColorConfig[]>(colorConfigs: T) {
+export function useStyle<T extends readonly SingleColorConfig[]>(
+  colorConfigs: T
+) {
   const theme = useContext(ThemeContext);
   const bgColor = useContext(BackgroundColorContext);
-  type ColorMap = { [K in Names<T>]: string };
+  type ColorMap = {[K in Names<T>]: string};
   const props = {} as ColorMap;
   colorConfigs.forEach((config) => {
-    props[config.name as Names<T>] = "";
+    props[config.name as Names<T>] = '';
   });
   return calcColors(props, colorConfigs, theme?.theme, bgColor);
 }
