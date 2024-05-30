@@ -219,39 +219,73 @@ function UIView(props: {
   viewFn: any;
 }) {
   const comp = props.comp;
-
   const childrenProps = childrenToProps(comp.children);
   const parentDisabled = useContext(DisabledContext);
-  const disabled = childrenProps["disabled"];
-  if (disabled !== undefined && typeof disabled === "boolean") {
-    childrenProps["disabled"] = disabled || parentDisabled;
+  const disabled = childrenProps['disabled'];
+  if (disabled !== undefined && typeof disabled === 'boolean') {
+    childrenProps['disabled'] = disabled || parentDisabled;
   }
 
   //ADDED BY FRED
   if (childrenProps.events) {
-    const events = childrenProps.events as { value?: any[] };
+    const events = childrenProps.events as {value?: any[]};
     if (!events.value || events.value.length === 0) {
       events.value = [];
     }
   }
   //END ADD BY FRED
 
+  if (comp.children.hasOwnProperty('showMask') && comp.children.hasOwnProperty('maskClosable')) {
+    return (
+      <HidableView hidden={childrenProps.hidden as boolean}>
+        {props.viewFn(
+          childrenProps,
+          comp.dispatch
+        )}
+      </HidableView>
+    );
+  }
+
+  let defaultChildren = comp.children;
+  const isNotContainer = defaultChildren.hasOwnProperty('style');
+  const restrictPaddingOnRotation = defaultChildren.hasOwnProperty('restrictPaddingOnRotation');
+  let rotationVal = null
+  let boxShadowVal = null;
+  if (isNotContainer) {
+    rotationVal = defaultChildren.style.children?.rotation?.valueAndMsg.value;
+    boxShadowVal = defaultChildren.style?.children?.boxShadow?.valueAndMsg?.value;
+  }
   return (
     <div
       ref={props.innerRef}
       className={childrenProps.className as string}
       data-testid={childrenProps.dataTestId as string}
       style={{
-        width: "100%",
-        height: "100%",
-        margin: "0px",
-        padding: "0px",
-      }}>
+        width: '100%',
+        height: '100%',
+        margin: '0px',
+        // padding:'0px',
+        padding: (
+          rotationVal === null || rotationVal === undefined || restrictPaddingOnRotation
+          ? '0px'
+          : (
+            boxShadowVal === null || boxShadowVal === undefined
+            ? (
+              rotationVal === '' || rotationVal === '0deg'
+              ? '0px'
+              : `calc(min(50%, ${Math.min(50, Math.abs(rotationVal.replace('deg', '')) / 90) * 100}%)) 0px`
+            )
+            : (
+              (rotationVal === '' || rotationVal === '0deg') && (boxShadowVal === '' || boxShadowVal === '0px')
+              ? '0px'
+              : `calc(min(50%, ${Math.min(50, Math.abs(rotationVal.replace('deg', '')) / 90) * 100}%)) 0px`
+            )
+          )
+        )
+      }}
+    >
       <HidableView hidden={childrenProps.hidden as boolean}>
-        {props.viewFn(
-          childrenProps,
-          comp.dispatch
-        )}
+        {props.viewFn(childrenProps, comp.dispatch)}
       </HidableView>
     </div>
   );

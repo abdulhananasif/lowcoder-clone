@@ -1,4 +1,4 @@
-import table from "./componentDocExtra/table.md?url";
+// import table from "./componentDocExtra/table.md?url";
 import { en } from "./en";
  
 export const de: typeof en = {
@@ -2433,6 +2433,8 @@ export const de: typeof en = {
   "home": {
       ...en.home,
       "profile": "Profil",
+      "news": "News",
+      "newsLoading": "Das Laden dauert ein wenig...",
       "allApplications": "Alle Apps",
       "allModules": "Alle Module",
       "allFolders": "Alle Ordner",
@@ -2773,10 +2775,10 @@ export const de: typeof en = {
       "title": "Titel",
       "selectBackground": "Ausgewählter Hintergrund"
   },
-  "componentDocExtra": {
+  /* "componentDocExtra": {
       ...en.componentDocExtra,
       "table": table,
-  },
+  }, */
   "idSource": {
       ...en.idSource,
       "title": "OAuth-Anbieter",
