@@ -4298,10 +4298,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonpath@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@types/jsonpath@npm:0.2.0"
-  checksum: c21b6bc016103cd9379080ba4fb132291dcea5fba9361830faae5ad92349339445d127c450b303084793f12957d5a21f9ae166d9778dcd1bda6bd2ea7eaf8631
+"@types/jsonpath@npm:^0.2.4":
+  version: 0.2.4
+  resolution: "@types/jsonpath@npm:0.2.4"
+  checksum: 401c59dd26eb47e59af10a558788e6d69600adfafec134bf0691a48a80f1ee4f61afaa235663d043c20d7de6f036037731f8289e9662a031bf460a22f156638b
   languageName: node
   linkType: hard
 
@@ -10149,7 +10149,7 @@ __metadata:
     "@types/axios": ^0.14.0
     "@types/express": ^4.17.14
     "@types/jest": ^29.2.4
-    "@types/jsonpath": ^0.2.0
+    "@types/jsonpath": ^0.2.4
     "@types/lodash": ^4.14.190
     "@types/morgan": ^1.9.3
     "@types/node": ^20.1.1
