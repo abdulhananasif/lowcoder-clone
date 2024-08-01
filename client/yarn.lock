@@ -5888,9 +5888,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"antd-mobile@npm:^5.34.0":
-  version: 5.36.0
-  resolution: "antd-mobile@npm:5.36.0"
+"antd-mobile@npm:^5.37.1":
+  version: 5.37.1
+  resolution: "antd-mobile@npm:5.37.1"
   dependencies:
     "@floating-ui/dom": ^1.4.2
     "@rc-component/mini-decimal": ^1.1.0
@@ -5913,7 +5913,8 @@ __metadata:
     use-sync-external-store: ^1.2.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 80d441578a2debf0052c1ab24fdbcc44f893baac5061efe5dce28cb85a9c6bf607c27c6487bd079b940b89fbaad3a7f0572b13d2b96da9a07e8a2472ef62a023
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: b65dc31eb2362ea6ffbabf26405a173e812a5841eafda8696d858112b532fc93463943f52231c99a23cc2cdc0935ce92d7d55bae87f292abe74dba233a33ddf2
   languageName: node
   linkType: hard
 
@@ -13545,7 +13546,7 @@ coolshapes-react@lowcoder-org/coolshapes-react:
     "@types/ua-parser-js": ^0.7.36
     "@welldone-software/why-did-you-render": ^6.2.3
     add: ^2.0.6
-    antd-mobile: ^5.34.0
+    antd-mobile: ^5.37.1
     babel-jest: ^29.3.0
     babel-preset-react-app: ^10.0.1
     chalk: 4
